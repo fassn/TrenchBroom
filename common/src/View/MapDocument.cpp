@@ -1133,8 +1133,9 @@ namespace TrenchBroom {
                     }
                 }
             } else if (selectedNodes().hasOnlyBrushes()) {
-                for (const Model::BrushNode* brush : selectedNodes().brushes()) {
-                    for (const Model::BrushVertex* vertex : brush->vertices()) {
+                for (const Model::BrushNode* brushNode : selectedNodes().brushes()) {
+                    const Model::Brush& brush = brushNode->brush();
+                    for (const Model::BrushVertex* vertex : brush.vertices()) {
                         polyhedron.addPoint(vertex->position());
                     }
                 }
@@ -1455,10 +1456,12 @@ namespace TrenchBroom {
                     info(str.str());
                 }
             } else if (selectedNodes().hasBrushes()) {
-                for (const Model::BrushNode* brush : selectedNodes().brushes()) {
+                for (const Model::BrushNode* brushNode : selectedNodes().brushes()) {
+                    const Model::Brush& brush = brushNode->brush();
+
                     std::stringstream str;
                     str.precision(17);
-                    for (const Model::BrushVertex* vertex : brush->vertices()) {
+                    for (const Model::BrushVertex* vertex : brush.vertices()) {
                         str << vertex->position() << " ";
                     }
                     info(str.str());
