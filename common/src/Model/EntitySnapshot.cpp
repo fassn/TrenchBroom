@@ -19,16 +19,16 @@
 
 #include "EntitySnapshot.h"
 
-#include "Model/Entity.h"
+#include "Model/EntityNode.h"
 
 namespace TrenchBroom {
     namespace Model {
-        EntitySnapshot::EntitySnapshot(Entity* entity, const EntityAttribute& origin, const EntityAttribute& rotation) :
+        EntitySnapshot::EntitySnapshot(EntityNode* entity, const EntityAttribute& origin, const EntityAttribute& rotation) :
         m_entity(entity),
         m_origin(origin),
         m_rotation(rotation) {}
 
-        static void restoreAttribute(Entity* entity, const EntityAttribute& attribute) {
+        static void restoreAttribute(EntityNode* entity, const EntityAttribute& attribute) {
             if (attribute.name().empty())
                 return;
 

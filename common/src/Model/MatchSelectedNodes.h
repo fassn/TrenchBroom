@@ -21,7 +21,7 @@
 #define MatchSelectedNodes_h
 
 #include "Model/BrushNode.h"
-#include "Model/Entity.h"
+#include "Model/EntityNode.h"
 #include "Model/GroupNode.h"
 
 namespace TrenchBroom {
@@ -32,7 +32,7 @@ namespace TrenchBroom {
             bool operator()(const Model::WorldNode*) const   { return false; }
             bool operator()(const Model::LayerNode*) const   { return false; }
             bool operator()(const Model::GroupNode* group) const   { return MatchSelected == group->selected(); }
-            bool operator()(const Model::Entity* entity) const { return MatchSelected == entity->selected(); }
+            bool operator()(const Model::EntityNode* entity) const { return MatchSelected == entity->selected(); }
             bool operator()(const Model::BrushNode* brush) const   { return MatchSelected == brush->selected(); }
         };
 
@@ -42,7 +42,7 @@ namespace TrenchBroom {
             bool operator()(const Model::WorldNode*) const   { return false; }
             bool operator()(const Model::LayerNode*) const   { return false; }
             bool operator()(const Model::GroupNode* group) const   { return MatchSelected == group->transitivelySelected(); }
-            bool operator()(const Model::Entity* entity) const { return MatchSelected == entity->transitivelySelected(); }
+            bool operator()(const Model::EntityNode* entity) const { return MatchSelected == entity->transitivelySelected(); }
             bool operator()(const Model::BrushNode* brush) const   { return MatchSelected == brush->transitivelySelected(); }
         };
     }

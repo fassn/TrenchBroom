@@ -20,7 +20,7 @@
 #include "EntityRotationPolicy.h"
 
 #include "Macros.h"
-#include "Model/Entity.h"
+#include "Model/EntityNode.h"
 
 #include <kdl/string_compare.h>
 #include <kdl/string_utils.h>
@@ -39,7 +39,7 @@ namespace TrenchBroom {
 
         EntityRotationPolicy::EntityRotationPolicy() {}
 
-        vm::mat4x4 EntityRotationPolicy::getRotation(const Entity* entity) {
+        vm::mat4x4 EntityRotationPolicy::getRotation(const EntityNode* entity) {
             const RotationInfo info = rotationInfo(entity);
             switch (info.type) {
                 case RotationType::Angle: {
@@ -109,7 +109,7 @@ namespace TrenchBroom {
             }
         }
 
-        void EntityRotationPolicy::applyRotation(Entity* entity, const vm::mat4x4& transformation) {
+        void EntityRotationPolicy::applyRotation(EntityNode* entity, const vm::mat4x4& transformation) {
             const auto info = rotationInfo(entity);
             const auto rotation = getRotation(entity);
 
@@ -154,12 +154,12 @@ namespace TrenchBroom {
             }
         }
 
-        std::string EntityRotationPolicy::getAttribute(const Entity* entity) {
+        std::string EntityRotationPolicy::getAttribute(const EntityNode* entity) {
             const auto info = rotationInfo(entity);
             return info.attribute;
         }
 
-        EntityRotationPolicy::RotationInfo EntityRotationPolicy::rotationInfo(const Entity* entity) {
+        EntityRotationPolicy::RotationInfo EntityRotationPolicy::rotationInfo(const EntityNode* entity) {
             auto type = RotationType::None;
             std::string attribute;
 
@@ -223,7 +223,7 @@ namespace TrenchBroom {
             return RotationInfo(type, attribute);
         }
 
-        void EntityRotationPolicy::setAngle(Entity* entity, const std::string& attribute, const vm::vec3& direction) {
+        void EntityRotationPolicy::setAngle(EntityNode* entity, const std::string& attribute, const vm::vec3& direction) {
             const auto angle = getAngle(direction);
             entity->addOrUpdateAttribute(attribute, kdl::str_to_string(vm::round(angle)));
         }
