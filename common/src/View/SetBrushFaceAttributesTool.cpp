@@ -19,6 +19,7 @@
 
 #include "SetBrushFaceAttributesTool.h"
 
+#include "Model/Brush.h"
 #include "Model/BrushFace.h"
 #include "Model/BrushNode.h"
 #include "Model/HitAdapter.h"
@@ -89,7 +90,7 @@ namespace TrenchBroom {
 
             Model::BrushFace* source = selectedFaces.front();
             Model::BrushFace* targetFace = Model::hitToFace(hit);
-            Model::BrushNode* targetBrush = targetFace->brush();
+            Model::BrushNode* targetBrush = targetFace->brush()->node();
             const std::vector<Model::BrushFace*> targetList = applyToBrush ? targetBrush->faces() : std::vector<Model::BrushFace*>({ targetFace });
 
             const Model::WrapStyle style = wrapStyle(inputState);
