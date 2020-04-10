@@ -1106,7 +1106,7 @@ namespace TrenchBroom {
 
         bool MapDocument::createBrush(const std::vector<vm::vec3>& points) {
             Model::BrushBuilder builder(m_world.get(), m_worldBounds, m_game->defaultFaceAttribs());
-            Model::BrushNode* brush = builder.createBrush(points, currentTextureName());
+            Model::BrushNode* brush = m_world->createBrush(builder.createBrush(points, currentTextureName()));
             if (!brush->fullySpecified()) {
                 delete brush;
                 return false;
@@ -1145,7 +1145,7 @@ namespace TrenchBroom {
             }
 
             const Model::BrushBuilder builder(m_world.get(), m_worldBounds, m_game->defaultFaceAttribs());
-            auto* brush = builder.createBrush(polyhedron, currentTextureName());
+            auto* brush = m_world->createBrush(builder.createBrush(polyhedron, currentTextureName()));
             brush->cloneFaceAttributesFrom(selectedNodes().brushes());
 
             // The nodelist is either empty or contains only brushes.
