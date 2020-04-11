@@ -107,7 +107,6 @@ namespace TrenchBroom {
             size_t m_lastSaveModificationCount;
             size_t m_modificationCount;
 
-            Model::NodeCollection m_partiallySelectedNodes;
             Model::NodeCollection m_selectedNodes;
             std::vector<Model::BrushFaceHandle> m_selectedBrushFaces;
 
