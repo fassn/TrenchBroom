@@ -1732,8 +1732,9 @@ namespace TrenchBroom {
             void doVisit(Model::LayerNode*) override   {}
             void doVisit(Model::GroupNode*) override   {}
             void doVisit(Model::EntityNode*) override {}
-            void doVisit(Model::BrushNode* brush) override   {
-                for (Model::BrushFace* face : brush->faces()) {
+            void doVisit(Model::BrushNode* brushNode) override   {
+                const Model::Brush& brush = brushNode->brush();
+                for (Model::BrushFace* face : brush.faces()) {
                     face->updateTexture(m_manager);
                 }
             }
@@ -1745,8 +1746,9 @@ namespace TrenchBroom {
             void doVisit(Model::LayerNode*) override   {}
             void doVisit(Model::GroupNode*) override   {}
             void doVisit(Model::EntityNode*) override {}
-            void doVisit(Model::BrushNode* brush) override   {
-                for (Model::BrushFace* face : brush->faces()) {
+            void doVisit(Model::BrushNode* brushNode) override   {
+                const Model::Brush& brush = brushNode->brush();
+                for (Model::BrushFace* face : brush.faces()) {
                     face->setTexture(nullptr);
                 }
             }
