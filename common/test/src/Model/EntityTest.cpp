@@ -26,7 +26,7 @@
 #include "Model/Entity.h"
 #include "Model/EntityAttributes.h"
 #include "Model/MapFormat.h"
-#include "Model/Layer.h"
+#include "Model/LayerNode.h"
 #include "Model/World.h"
 
 #include <vecmath/vec.h>

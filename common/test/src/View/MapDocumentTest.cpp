@@ -26,7 +26,7 @@
 #include "Model/Entity.h"
 #include "Model/Group.h"
 #include "Model/HitQuery.h"
-#include "Model/Layer.h"
+#include "Model/LayerNode.h"
 #include "Model/BrushFace.h"
 #include "Model/BrushBuilder.h"
 #include "Model/MapFormat.h"
