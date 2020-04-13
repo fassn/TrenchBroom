@@ -23,6 +23,7 @@
 #include "Model/BrushFace.h"
 #include "Model/BrushFaceHandle.h"
 #include "Model/BrushNode.h"
+#include "Model/ChangeBrushFaceAttributesRequest.h"
 #include "Model/HitAdapter.h"
 #include "Model/HitQuery.h"
 #include "Model/TexCoordSystem.h"
@@ -106,7 +107,11 @@ namespace TrenchBroom {
                     document->copyTexCoordSystemFromFace(*snapshot, sourceFace->attributes().takeSnapshot(), sourceFace->boundary(), style);
                 }
             } else {
-                document->setTexture(sourceFace->texture());
+                Model::ChangeBrushFaceAttributesRequest request;
+                request.setTextureName(sourceFace->textureName());
+                if (document->setFaceAttributes(request)) {
+                    document->setCurrentTextureName(sourceFace->textureName());
+                }
             }
             document->deselectAll();
             document->select({ sourceBrush, sourceFace });
