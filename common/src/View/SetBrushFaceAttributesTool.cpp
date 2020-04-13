@@ -108,9 +108,9 @@ namespace TrenchBroom {
                 }
             } else {
                 Model::ChangeBrushFaceAttributesRequest request;
-                request.setTextureName(sourceFace->textureName());
+                request.setTextureName(sourceFace->attributes().textureName());
                 if (document->setFaceAttributes(request)) {
-                    document->setCurrentTextureName(sourceFace->textureName());
+                    document->setCurrentTextureName(sourceFace->attributes().textureName());
                 }
             }
             document->deselectAll();
