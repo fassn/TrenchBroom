@@ -1742,7 +1742,8 @@ namespace TrenchBroom {
             void doVisit(Model::BrushNode* brushNode) override   {
                 const Model::Brush& brush = brushNode->brush();
                 for (Model::BrushFace* face : brush.faces()) {
-                    face->updateTexture(m_manager);
+                    Assets::Texture* texture = m_manager.texture(face->attributes().textureName());
+                    face->setTexture(texture);
                 }
             }
         };
@@ -1773,7 +1774,8 @@ namespace TrenchBroom {
 
         void MapDocument::setTextures(const std::vector<Model::BrushFace*>& faces) {
             for (Model::BrushFace* face : faces) {
-                face->updateTexture(*m_textureManager);
+                Assets::Texture* texture = m_textureManager->texture(face->attributes().textureName());
+                face->setTexture(texture);
             }
         }
 
