@@ -106,9 +106,9 @@ namespace TrenchBroom {
 
             for (const auto& handle : faces) {
                 Model::BrushNode* node = handle.node();
-                Model::BrushFace* face = handle.face();
+                const Model::BrushFace* face = handle.face();
                 if (!face->selected() && m_editorContext->selectable(node, face)) {
-                    face->select();
+                    node->selectFace(handle.faceIndex());
                     selected.push_back(handle);
                 }
             }
@@ -181,9 +181,10 @@ namespace TrenchBroom {
             deselected.reserve(faces.size());
 
             for (const auto& handle : faces) {
-                Model::BrushFace* face = handle.face();
+                const Model::BrushFace* face = handle.face();
                 if (face->selected()) {
-                    face->deselect();
+                    Model::BrushNode* node = handle.node();
+                    node->deselectFace(handle.faceIndex());
                     deselected.push_back(handle);
                 }
             }
@@ -224,7 +225,8 @@ namespace TrenchBroom {
             selectionWillChangeNotifier();
 
             for (const auto& handle : m_selectedBrushFaces) {
-                handle.face()->deselect();
+                Model::BrushNode* node = handle.node();
+                node->deselectFace(handle.faceIndex());
             }
 
             Selection selection;
