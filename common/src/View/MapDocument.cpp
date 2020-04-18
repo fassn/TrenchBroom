@@ -2004,7 +2004,8 @@ namespace TrenchBroom {
 
         void MapDocument::updateFaceTags(const std::vector<Model::BrushFaceHandle>& faceHandles) {
             for (const auto& faceHandle : faceHandles) {
-                faceHandle.face()->updateTags(*m_tagManager);
+                Model::BrushNode* node = faceHandle.node();
+                node->updateFaceTags(faceHandle.faceIndex(), *m_tagManager);
             }
         }
 
