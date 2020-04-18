@@ -671,7 +671,7 @@ namespace TrenchBroom {
                 face->moveTexture(vm::vec3(cameraUp), vm::vec3(cameraRight), delta);
                 node->setBrush(brush);
             }
-            brushFacesDidChangeNotifier(Model::toFaces(m_selectedBrushFaces));
+            brushFacesDidChangeNotifier(m_selectedBrushFaces);
         }
 
         void MapDocumentCommandFacade::performRotateTextures(const float angle) {
@@ -682,7 +682,7 @@ namespace TrenchBroom {
                 face->rotateTexture(angle);
                 node->setBrush(brush);
             }
-            brushFacesDidChangeNotifier(Model::toFaces(m_selectedBrushFaces));
+            brushFacesDidChangeNotifier(m_selectedBrushFaces);
         }
 
         void MapDocumentCommandFacade::performShearTextures(const vm::vec2f& factors) {
@@ -693,7 +693,7 @@ namespace TrenchBroom {
                 face->shearTexture(factors);
                 node->setBrush(brush);
             }
-            brushFacesDidChangeNotifier(Model::toFaces(m_selectedBrushFaces));
+            brushFacesDidChangeNotifier(m_selectedBrushFaces);
         }
 
         void MapDocumentCommandFacade::performCopyTexCoordSystemFromFace(const Model::TexCoordSystemSnapshot& coordSystemSnapshot, const Model::BrushFaceAttributes& attribs, const vm::plane3& sourceFacePlane, const Model::WrapStyle wrapStyle) {
@@ -704,14 +704,13 @@ namespace TrenchBroom {
                 face->copyTexCoordSystemFromFace(coordSystemSnapshot, attribs, sourceFacePlane, wrapStyle);
                 node->setBrush(brush);
             }
-            brushFacesDidChangeNotifier(Model::toFaces(m_selectedBrushFaces));
+            brushFacesDidChangeNotifier(m_selectedBrushFaces);
         }
 
         void MapDocumentCommandFacade::performChangeBrushFaceAttributes(const Model::ChangeBrushFaceAttributesRequest& request) {
             if (request.evaluate(allSelectedBrushFaces())) {
-                const auto faces = Model::toFaces(allSelectedBrushFaces());
-                setTextures(faces);
-                brushFacesDidChangeNotifier(faces);
+                setTextures(Model::toFaces(allSelectedBrushFaces()));
+                brushFacesDidChangeNotifier(allSelectedBrushFaces());
             }
         }
 
@@ -893,9 +892,8 @@ namespace TrenchBroom {
             if (!faceHandles.empty()) {
                 snapshot->restoreNodes(m_worldBounds);
                 
-                const auto faces = Model::toFaces(faceHandles);
-                setTextures(faces);
-                brushFacesDidChangeNotifier(faces);
+                setTextures(Model::toFaces(faceHandles));
+                brushFacesDidChangeNotifier(faceHandles);
             }
         }
 
