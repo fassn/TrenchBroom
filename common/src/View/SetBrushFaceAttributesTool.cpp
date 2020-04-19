@@ -101,9 +101,9 @@ namespace TrenchBroom {
             document->select(targetList);
             if (copyAllAttributes(inputState)) {
                 auto snapshot = sourceFace->takeTexCoordSystemSnapshot();
-                document->setFaceAttributes(sourceFace->attribs());
+                document->setFaceAttributes(sourceFace->attributes());
                 if (snapshot != nullptr) {
-                    document->copyTexCoordSystemFromFace(*snapshot, sourceFace->attribs().takeSnapshot(), sourceFace->boundary(), style);
+                    document->copyTexCoordSystemFromFace(*snapshot, sourceFace->attributes().takeSnapshot(), sourceFace->boundary(), style);
                 }
             } else {
                 document->setTexture(sourceFace->texture());
@@ -223,9 +223,9 @@ namespace TrenchBroom {
             document->select(targetFaceHandle);
 
             auto snapshot = sourceFaceHandle.face()->takeTexCoordSystemSnapshot();
-            document->setFaceAttributes(sourceFaceHandle.face()->attribs());
+            document->setFaceAttributes(sourceFaceHandle.face()->attributes());
             if (snapshot != nullptr) {
-                document->copyTexCoordSystemFromFace(*snapshot, sourceFaceHandle.face()->attribs().takeSnapshot(), sourceFaceHandle.face()->boundary(), style);
+                document->copyTexCoordSystemFromFace(*snapshot, sourceFaceHandle.face()->attributes().takeSnapshot(), sourceFaceHandle.face()->boundary(), style);
             }
 
             document->deselectAll();
