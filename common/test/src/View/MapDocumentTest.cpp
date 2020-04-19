@@ -683,7 +683,7 @@ namespace TrenchBroom {
 
             // picking a grouped object when the containing group is closed should return the object,
             // which is converted to the group when hitsToNodesWithGroupPicking() is used.
-            auto hits = pickResult.query().type(Model::BrushNode::BrushHit).all();
+            auto hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
             ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
@@ -695,7 +695,7 @@ namespace TrenchBroom {
             pickResult.clear();
             document->pick(vm::ray3(vm::vec3(32, 32, -32), vm::vec3::pos_z()), pickResult);
 
-            hits = pickResult.query().type(Model::BrushNode::BrushHit).all();
+            hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(2u, hits.size());
 
             ASSERT_EQ(std::vector<Model::Node*>{ group }, hitsToNodesWithGroupPicking(hits));
@@ -704,7 +704,7 @@ namespace TrenchBroom {
             pickResult.clear();
             document->pick(vm::ray3(vm::vec3(-32, 0, 96), vm::vec3::pos_x()), pickResult);
 
-            hits = pickResult.query().type(Model::BrushNode::BrushHit).all();
+            hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_TRUE(hits.empty());
 
             // hitting a grouped object when the containing group is open should return the object only
@@ -713,7 +713,7 @@ namespace TrenchBroom {
             pickResult.clear();
             document->pick(vm::ray3(vm::vec3(-32, 0, 0), vm::vec3::pos_x()), pickResult);
 
-            hits = pickResult.query().type(Model::BrushNode::BrushHit).all();
+            hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
             ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
@@ -800,7 +800,7 @@ namespace TrenchBroom {
             pickResult.clear();
             document->pick(highRay, pickResult);
 
-            auto hits = pickResult.query().type(Model::BrushNode::BrushHit).all();
+            auto hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
             ASSERT_EQ(brush3->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
@@ -812,7 +812,7 @@ namespace TrenchBroom {
             pickResult.clear();
             document->pick(lowRay, pickResult);
 
-            hits = pickResult.query().type(Model::BrushNode::BrushHit).all();
+            hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
             ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
@@ -839,7 +839,7 @@ namespace TrenchBroom {
             pickResult.clear();
             document->pick(highRay, pickResult);
 
-            hits = pickResult.query().type(Model::BrushNode::BrushHit).all();
+            hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
             ASSERT_EQ(brush3->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
@@ -850,7 +850,7 @@ namespace TrenchBroom {
             pickResult.clear();
             document->pick(lowRay, pickResult);
 
-            hits = pickResult.query().type(Model::BrushNode::BrushHit).all();
+            hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
             ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
