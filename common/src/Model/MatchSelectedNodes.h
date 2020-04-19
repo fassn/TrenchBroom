@@ -20,7 +20,7 @@
 #ifndef MatchSelectedNodes_h
 #define MatchSelectedNodes_h
 
-#include "Model/Brush.h"
+#include "Model/BrushNode.h"
 #include "Model/Entity.h"
 #include "Model/Group.h"
 
@@ -33,7 +33,7 @@ namespace TrenchBroom {
             bool operator()(const Model::Layer*) const   { return false; }
             bool operator()(const Model::Group* group) const   { return MatchSelected == group->selected(); }
             bool operator()(const Model::Entity* entity) const { return MatchSelected == entity->selected(); }
-            bool operator()(const Model::Brush* brush) const   { return MatchSelected == brush->selected(); }
+            bool operator()(const Model::BrushNode* brush) const   { return MatchSelected == brush->selected(); }
         };
 
         template <bool MatchSelected>
@@ -43,7 +43,7 @@ namespace TrenchBroom {
             bool operator()(const Model::Layer*) const   { return false; }
             bool operator()(const Model::Group* group) const   { return MatchSelected == group->transitivelySelected(); }
             bool operator()(const Model::Entity* entity) const { return MatchSelected == entity->transitivelySelected(); }
-            bool operator()(const Model::Brush* brush) const   { return MatchSelected == brush->transitivelySelected(); }
+            bool operator()(const Model::BrushNode* brush) const   { return MatchSelected == brush->transitivelySelected(); }
         };
     }
 }
