@@ -89,32 +89,31 @@ namespace TrenchBroom {
 
             const Model::Hit& hit = inputState.pickResult().query().pickable().type(Model::BrushNode::BrushHitType).occluded().first();
 
-            Model::BrushNode* sourceBrush = selectedFaces.front().node();
-            Model::BrushFace* sourceFace = selectedFaces.front().face();
-            Model::BrushNode* targetBrush = Model::hitToBrush(hit);
-            Model::BrushFace* targetFace = Model::hitToFace(hit);
-            const auto targetList = applyToBrush ? Model::toHandles(targetBrush) : std::vector<Model::BrushFaceHandle>{Model::BrushFaceHandle(targetBrush, targetFace)};
+            const auto source = selectedFaces.front();
+            const auto target = *Model::hitToFaceHandle(hit);
+            const auto targetList = applyToBrush ? Model::toHandles(target.node()) : std::vector<Model::BrushFaceHandle>{target};
 
+            const auto& sourceAttributes = source.face()->attributes();
             const Model::WrapStyle style = wrapStyle(inputState);
 
             const Transaction transaction(document);
             document->deselectAll();
             document->select(targetList);
             if (copyAllAttributes(inputState)) {
-                auto snapshot = sourceFace->takeTexCoordSystemSnapshot();
-                document->setFaceAttributes(sourceFace->attributes());
+                auto snapshot = source.face()->takeTexCoordSystemSnapshot();
+                document->setFaceAttributes(sourceAttributes);
                 if (snapshot != nullptr) {
-                    document->copyTexCoordSystemFromFace(*snapshot, sourceFace->attributes().takeSnapshot(), sourceFace->boundary(), style);
+                    document->copyTexCoordSystemFromFace(*snapshot, sourceAttributes.takeSnapshot(), source.face()->boundary(), style);
                 }
             } else {
                 Model::ChangeBrushFaceAttributesRequest request;
-                request.setTextureName(sourceFace->attributes().textureName());
+                request.setTextureName(sourceAttributes.textureName());
                 if (document->setFaceAttributes(request)) {
-                    document->setCurrentTextureName(sourceFace->attributes().textureName());
+                    document->setCurrentTextureName(sourceAttributes.textureName());
                 }
             }
             document->deselectAll();
-            document->select({ sourceBrush, sourceFace });
+            document->select(source);
         }
 
         bool SetBrushFaceAttributesTool::canCopyAttributesFromSelection(const InputState& inputState) const {
