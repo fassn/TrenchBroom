@@ -20,15 +20,14 @@
 #ifndef TrenchBroom_SetBrushFaceAttributesTool
 #define TrenchBroom_SetBrushFaceAttributesTool
 
+#include "Model/BrushFaceHandle.h"
 #include "View/Tool.h"
 #include "View/ToolController.h"
 
 #include <memory>
+#include <optional>
 
 namespace TrenchBroom {
-    namespace Model {
-        class BrushFace;
-    }
     namespace View {
         class MapDocument;
 
@@ -36,9 +35,9 @@ namespace TrenchBroom {
         private:
             std::weak_ptr<MapDocument> m_document;
         private: // drag state
-            Model::BrushFace* m_dragInitialSelectedFace;
-            Model::BrushFace* m_dragTargetFace;
-            Model::BrushFace* m_dragSourceFace;
+            std::optional<Model::BrushFaceHandle> m_dragInitialSelectedFaceHandle;
+            std::optional<Model::BrushFaceHandle> m_dragTargetFaceHandle;
+            std::optional<Model::BrushFaceHandle> m_dragSourceFaceHandle;
         public:
             SetBrushFaceAttributesTool(std::weak_ptr<MapDocument> document);
         private:
@@ -61,7 +60,7 @@ namespace TrenchBroom {
             void doCancelMouseDrag() override;
 
             void resetDragState();
-            void transferFaceAttributes(const InputState& inputState, Model::BrushFace* sourceFace, Model::BrushFace* targetFace);
+            void transferFaceAttributes(const InputState& inputState, const Model::BrushFaceHandle& sourceFaceHandle, const Model::BrushFaceHandle& targetFaceHandle);
         };
     }
 }

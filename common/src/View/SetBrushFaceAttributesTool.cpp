@@ -21,6 +21,7 @@
 
 #include "Model/Brush.h"
 #include "Model/BrushFace.h"
+#include "Model/BrushFaceHandle.h"
 #include "Model/BrushNode.h"
 #include "Model/HitAdapter.h"
 #include "Model/HitQuery.h"
@@ -39,10 +40,7 @@ namespace TrenchBroom {
         SetBrushFaceAttributesTool::SetBrushFaceAttributesTool(std::weak_ptr<MapDocument> document) :
         ToolControllerBase(),
         Tool(true),
-        m_document(document),
-        m_dragInitialSelectedFace(nullptr),
-        m_dragTargetFace(nullptr),
-        m_dragSourceFace(nullptr) {}
+        m_document(document) {}
 
         Tool* SetBrushFaceAttributesTool::doGetTool() {
             return this;
@@ -85,13 +83,16 @@ namespace TrenchBroom {
 
             auto document = kdl::mem_lock(m_document);
 
-            const std::vector<Model::BrushFace*> selectedFaces = document->selectedBrushFaces();
+            const auto selectedFaces = document->selectedBrushFaces();
+            assert(!selectedFaces.empty());
+
             const Model::Hit& hit = inputState.pickResult().query().pickable().type(Model::BrushNode::BrushHitType).occluded().first();
 
-            Model::BrushFace* source = selectedFaces.front();
+            Model::BrushNode* sourceBrush = selectedFaces.front().node();
+            Model::BrushFace* sourceFace = selectedFaces.front().face();
+            Model::BrushNode* targetBrush = Model::hitToBrush(hit);
             Model::BrushFace* targetFace = Model::hitToFace(hit);
-            Model::BrushNode* targetBrush = targetFace->brush()->node();
-            const std::vector<Model::BrushFace*> targetList = applyToBrush ? targetBrush->faces() : std::vector<Model::BrushFace*>({ targetFace });
+            const auto targetList = applyToBrush ? Model::toHandles(targetBrush) : std::vector<Model::BrushFaceHandle>{Model::BrushFaceHandle(targetBrush, targetFace)};
 
             const Model::WrapStyle style = wrapStyle(inputState);
 
@@ -99,16 +100,16 @@ namespace TrenchBroom {
             document->deselectAll();
             document->select(targetList);
             if (copyAllAttributes(inputState)) {
-                auto snapshot = source->takeTexCoordSystemSnapshot();
-                document->setFaceAttributes(source->attribs());
+                auto snapshot = sourceFace->takeTexCoordSystemSnapshot();
+                document->setFaceAttributes(sourceFace->attribs());
                 if (snapshot != nullptr) {
-                    document->copyTexCoordSystemFromFace(*snapshot, source->attribs().takeSnapshot(), source->boundary(), style);
+                    document->copyTexCoordSystemFromFace(*snapshot, sourceFace->attribs().takeSnapshot(), sourceFace->boundary(), style);
                 }
             } else {
-                document->setTexture(source->texture());
+                document->setTexture(sourceFace->texture());
             }
             document->deselectAll();
-            document->select(source);
+            document->select({ sourceBrush, sourceFace });
         }
 
         bool SetBrushFaceAttributesTool::canCopyAttributesFromSelection(const InputState& inputState) const {
@@ -118,7 +119,7 @@ namespace TrenchBroom {
 
             auto document = kdl::mem_lock(m_document);
 
-            const std::vector<Model::BrushFace*> selectedFaces = document->selectedBrushFaces();
+            const auto selectedFaces = document->selectedBrushFaces();
             if (selectedFaces.size() != 1)
                 return false;
 
@@ -149,13 +150,13 @@ namespace TrenchBroom {
             auto document = kdl::mem_lock(m_document);
 
             // Need to have a selected face to start painting alignment
-            const std::vector<Model::BrushFace*>& selectedFaces = document->selectedBrushFaces();
+            const std::vector<Model::BrushFaceHandle>& selectedFaces = document->selectedBrushFaces();
             if (selectedFaces.size() != 1) {
                 return false;
             }
 
             resetDragState();
-            m_dragInitialSelectedFace = selectedFaces[0];
+            m_dragInitialSelectedFaceHandle = selectedFaces[0];
 
             document->startTransaction("Drag Apply Face Attributes");
 
@@ -164,28 +165,28 @@ namespace TrenchBroom {
 
         bool SetBrushFaceAttributesTool::doMouseDrag(const InputState& inputState) {            
             const Model::Hit& hit = inputState.pickResult().query().pickable().type(Model::BrushNode::BrushHitType).occluded().first();
-            if (!hit.isMatch()) {
+            const auto faceHandle = Model::hitToFaceHandle(hit);
+            if (!faceHandle) {
                 // Dragging over void
                 return true;
             }
 
-            Model::BrushFace* face = Model::hitToFace(hit);
-            if (face == m_dragTargetFace) {
+            if (faceHandle == m_dragTargetFaceHandle) {
                 // Dragging on the same face as last frame
                 return true;
             }
 
-            if (m_dragSourceFace == nullptr && m_dragTargetFace == nullptr) {
+            if (!m_dragTargetFaceHandle && !m_dragTargetFaceHandle) {
                 // Start drag
-                m_dragSourceFace = m_dragInitialSelectedFace;
-                m_dragTargetFace = face;                
+                m_dragSourceFaceHandle = m_dragInitialSelectedFaceHandle;
+                m_dragTargetFaceHandle = faceHandle;
             } else {
                 // Continuing drag onto new face
-                m_dragSourceFace = m_dragTargetFace;
-                m_dragTargetFace = face;
+                m_dragSourceFaceHandle = m_dragTargetFaceHandle;
+                m_dragTargetFaceHandle = faceHandle;
             }
 
-            transferFaceAttributes(inputState, m_dragSourceFace, m_dragTargetFace);
+            transferFaceAttributes(inputState, *m_dragSourceFaceHandle, *m_dragTargetFaceHandle);
 
             return true;
         }
@@ -205,15 +206,13 @@ namespace TrenchBroom {
         }
 
         void SetBrushFaceAttributesTool::resetDragState() {
-            m_dragInitialSelectedFace = nullptr;
-            m_dragTargetFace = nullptr;
-            m_dragSourceFace = nullptr;
+            m_dragInitialSelectedFaceHandle = std::nullopt;
+            m_dragTargetFaceHandle = std::nullopt;
+            m_dragSourceFaceHandle = std::nullopt;
         }
 
-        void SetBrushFaceAttributesTool::transferFaceAttributes(const InputState& inputState, Model::BrushFace* sourceFace, Model::BrushFace* targetFace) {
-            ensure(sourceFace != nullptr, "no source face");
-            ensure(targetFace != nullptr, "no target face");
-            ensure(m_dragInitialSelectedFace != nullptr, "no initially selected face");
+        void SetBrushFaceAttributesTool::transferFaceAttributes(const InputState& inputState, const Model::BrushFaceHandle& sourceFaceHandle, const Model::BrushFaceHandle& targetFaceHandle) {
+            ensure(m_dragInitialSelectedFaceHandle, "no initially selected face");
 
             auto document = kdl::mem_lock(m_document);
 
@@ -221,16 +220,16 @@ namespace TrenchBroom {
 
             const Transaction transaction(document);
             document->deselectAll();
-            document->select(targetFace);
+            document->select(targetFaceHandle);
 
-            auto snapshot = sourceFace->takeTexCoordSystemSnapshot();
-            document->setFaceAttributes(sourceFace->attribs());
+            auto snapshot = sourceFaceHandle.face()->takeTexCoordSystemSnapshot();
+            document->setFaceAttributes(sourceFaceHandle.face()->attribs());
             if (snapshot != nullptr) {
-                document->copyTexCoordSystemFromFace(*snapshot, sourceFace->attribs().takeSnapshot(), sourceFace->boundary(), style);
+                document->copyTexCoordSystemFromFace(*snapshot, sourceFaceHandle.face()->attribs().takeSnapshot(), sourceFaceHandle.face()->boundary(), style);
             }
 
             document->deselectAll();
-            document->select(m_dragInitialSelectedFace);
+            document->select(*m_dragInitialSelectedFaceHandle);
         }
     }
 }

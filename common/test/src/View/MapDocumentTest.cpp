@@ -25,6 +25,7 @@
 #include "Model/BrushNode.h"
 #include "Model/EntityNode.h"
 #include "Model/GroupNode.h"
+#include "Model/HitAdapter.h"
 #include "Model/HitQuery.h"
 #include "Model/LayerNode.h"
 #include "Model/BrushFace.h"
@@ -342,7 +343,10 @@ namespace TrenchBroom {
             auto* face1 = brush1->faces().front();
             auto* face2 = brush2->faces().front();
 
-            document->select(std::vector<Model::BrushFace*>{ face1, face2 });
+            document->select({
+                { brush1, face1 },
+                { brush2, face2 }
+            });
             ASSERT_TRUE(document->csgConvexMerge());
             ASSERT_EQ(2u, entity->children().size()); // added to the parent of the first brush, original brush is not deleted
 
@@ -627,7 +631,7 @@ namespace TrenchBroom {
             auto hits = pickResult.query().all();
             ASSERT_EQ(1u, hits.size());
 
-            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
+            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), Model::hitToFace(hits.front()));
             ASSERT_DOUBLE_EQ(32.0, hits.front().distance());
 
             pickResult.clear();
@@ -686,7 +690,7 @@ namespace TrenchBroom {
             auto hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
-            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
+            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), Model::hitToFace(hits.front()));
             ASSERT_DOUBLE_EQ(32.0, hits.front().distance());
 
             ASSERT_EQ(std::vector<Model::Node*>{ group }, hitsToNodesWithGroupPicking(hits));
@@ -716,7 +720,7 @@ namespace TrenchBroom {
             hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
-            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
+            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), Model::hitToFace(hits.front()));
             ASSERT_DOUBLE_EQ(32.0, hits.front().distance());
 
             ASSERT_EQ(std::vector<Model::Node*>{ brush1 }, hitsToNodesWithGroupPicking(hits));
@@ -803,7 +807,7 @@ namespace TrenchBroom {
             auto hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
-            ASSERT_EQ(brush3->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
+            ASSERT_EQ(brush3->findFace(vm::vec3::neg_x()), Model::hitToFace(hits.front()));
             ASSERT_DOUBLE_EQ(32.0, hits.front().distance());
 
             ASSERT_EQ(std::vector<Model::Node*>{ brush3 }, hitsToNodesWithGroupPicking(hits));
@@ -815,7 +819,7 @@ namespace TrenchBroom {
             hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
-            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
+            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), Model::hitToFace(hits.front()));
             ASSERT_DOUBLE_EQ(32.0, hits.front().distance());
             ASSERT_EQ(std::vector<Model::Node*>{ inner }, hitsToNodesWithGroupPicking(hits));
 
@@ -842,7 +846,7 @@ namespace TrenchBroom {
             hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
-            ASSERT_EQ(brush3->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
+            ASSERT_EQ(brush3->findFace(vm::vec3::neg_x()), Model::hitToFace(hits.front()));
             ASSERT_DOUBLE_EQ(32.0, hits.front().distance());
             ASSERT_EQ(std::vector<Model::Node*>{ brush3 }, hitsToNodesWithGroupPicking(hits));
 
@@ -853,7 +857,7 @@ namespace TrenchBroom {
             hits = pickResult.query().type(Model::BrushNode::BrushHitType).all();
             ASSERT_EQ(1u, hits.size());
 
-            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace*>());
+            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), Model::hitToFace(hits.front()));
             ASSERT_DOUBLE_EQ(32.0, hits.front().distance());
             ASSERT_EQ(std::vector<Model::Node*>{ brush1 }, hitsToNodesWithGroupPicking(hits));
         }
@@ -885,7 +889,7 @@ namespace TrenchBroom {
             auto hits = pickResult.query().all();
             ASSERT_EQ(1u, hits.size());
 
-            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), hits.front().target<Model::BrushFace *>());
+            ASSERT_EQ(brush1->findFace(vm::vec3::neg_x()), Model::hitToFace(hits.front()));
             ASSERT_DOUBLE_EQ(32.0, hits.front().distance());
         }
 
